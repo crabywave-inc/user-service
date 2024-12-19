@@ -61,7 +61,9 @@ impl MessagingPort for PubSubMessaging {
             ..Default::default()
         };
 
-        let subscription = self.client.subscription(queue);
+        let topic_name = format!("projects/{}/subscriptions/{}", self.project_id, queue);
+
+        let subscription = self.client.subscription(&topic_name);
         let mut stream = subscription.subscribe(None).await?;
 
         tokio::spawn(async move {
@@ -86,6 +88,8 @@ impl MessagingPort for PubSubMessaging {
                 if let Err(e) = handler(parsed_message).await {
                     tracing::error!("Failed to handle message: {:?}", e);
                 }
+
+                message.ack().await.unwrap();
             }
         });
 
