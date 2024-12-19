@@ -72,7 +72,6 @@ impl MessagingPort for MessagingTypeImpl {
         Fut: Future<Output = Result<()>> + Send + 'static,
         T: DeserializeOwned + Send + Sync + Debug + Clone + 'static,
     {
-        println!("Type of messaging: {:?}", self);
         match self {
             MessagingTypeImpl::PubSub(messaging) => messaging.subscribe(topic, handler).await,
         }
